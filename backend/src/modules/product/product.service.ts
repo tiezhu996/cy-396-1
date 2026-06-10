@@ -26,14 +26,16 @@ export class ProductService {
   }
 
   deductStock(productId: number, skuCode: string, quantity: number): void {
+    if (!Number.isInteger(quantity) || quantity <= 0) return;
     const product = this.findById(productId);
     if (!product) return;
     const sku = product.skus.find((s) => s.code === skuCode);
-    if (sku) sku.stock -= quantity;
-    product.stock -= quantity;
+    if (sku) sku.stock = Math.max(0, sku.stock - quantity);
+    product.stock = Math.max(0, product.stock - quantity);
   }
 
   addSales(productId: number, quantity: number): void {
+    if (!Number.isInteger(quantity) || quantity <= 0) return;
     const product = this.findById(productId);
     if (product) product.sales += quantity;
   }

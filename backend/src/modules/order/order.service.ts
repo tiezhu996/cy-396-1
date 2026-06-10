@@ -16,6 +16,10 @@ export class OrderService {
   constructor(private readonly productService: ProductService) {}
 
   addCartItem(item: CartItem): { message: string; item: CartItem } {
+    if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
+      throw new AppException(ERROR_CODES.VALIDATION_FAILED, '加购数量必须为大于 0 的整数');
+    }
+
     const product = this.productService.findById(item.productId);
     if (!product) {
       throw new AppException(ERROR_CODES.NOT_FOUND, '商品不存在');
@@ -55,6 +59,10 @@ export class OrderService {
     let totalAmount: number = 0;
 
     for (const cartItem of cartItems) {
+      if (!Number.isInteger(cartItem.quantity) || cartItem.quantity <= 0) {
+        throw new AppException(ERROR_CODES.VALIDATION_FAILED, '商品数量必须为大于 0 的整数');
+      }
+
       const product = this.productService.findById(cartItem.productId);
       if (!product) {
         throw new AppException(ERROR_CODES.NOT_FOUND, `商品 ${cartItem.productId} 不存在`);
